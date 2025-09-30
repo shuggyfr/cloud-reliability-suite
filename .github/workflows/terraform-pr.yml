@@ -1,0 +1,19 @@
+name: tf-validate-plan
+on:
+  pull_request:
+    paths:
+      - "iac/**.tf"
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: iac/aws } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with: { terraform_version: "1.13.3" }
+      - run: terraform fmt -check
+      - run: terraform init -input=false
+      - run: terraform validate
+      - run: terraform plan -no-color
