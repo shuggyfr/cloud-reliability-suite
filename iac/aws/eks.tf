@@ -1,6 +1,6 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.0"
+  version = "~> 19.0"
 
   cluster_name    = "crs-eks"
   cluster_version = "1.30"
@@ -11,14 +11,29 @@ module "eks" {
   cluster_endpoint_public_access = true
   enable_irsa                    = true
 
+
+
   eks_managed_node_groups = {
     default = {
-      ami_type       = "AL2_ARM_64"
-      instance_types = ["t4g.medium"]
-      desired_size   = 2
+      ami_type       = "AL2_x86_64"
+      instance_types = ["t3.micro"]
+      desired_size   = 1
       min_size       = 1
-      max_size       = 3
+      max_size       = 2
+      capacity_type  = "ON_DEMAND"
       labels         = { role = "general" }
     }
   }
+
+  manage_aws_auth_configmap = true
+
+  aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::039828601491:user/terraform-admin"
+      username = "terraform-admin"
+      groups   = ["system:masters"]
+    }
+  ]
 }
+
+
